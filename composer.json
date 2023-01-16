@@ -1,0 +1,29 @@
+{
+    "name": "pcore/clickhouse",
+    "description": "The ClickHouse component for PCore",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "pcore",
+        "pcore-framework",
+        "framework",
+        "pcore-component"
+    ],
+    "homepage": "https://github.com/pcore-framework/clickhouse",
+    "authors": [
+        {
+            "name": "Magomedcoder",
+            "email": "info@magomedcoder.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "PCore\\ClickHouse\\": "src/"
+        }
+    }
+}
