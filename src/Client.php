@@ -22,6 +22,11 @@ class Client
     private $socket;
 
     /**
+     * @var ClickhouseQueryMessage
+     */
+    private ClickhouseQueryMessage $queryMessage;
+
+    /**
      * @var ResponseParserInterface|JSONEachRowStreamResponseParser
      */
     private ResponseParserInterface $responseParser;
@@ -43,14 +48,39 @@ class Client
         }
     }
 
+    public function __destruct()
+    {
+        if ($this->socket) {
+            fclose($this->socket);
+        }
+    }
+
+    /**
+     * @param string $sqlQuery
+     * @return $this
+     */
+    public function query(string $sqlQuery): self
+    {
+        $this->queryMessage = new ClickhouseQueryMessage($sqlQuery, $this->configuration);
+        return $this;
+    }
+
     /**
      * @return Generator|null
      * @throws JsonException
      */
     public function stream(): ?Generator
     {
-        $block = stream_get_line($this->socket, self::READ_BYTES, "\r\n");
-        yield from $this->responseParser->add($block)->row();
+        fwrite($this->socket, (string)$this->queryMessage, $this->queryMessage->length());
+        $processingBodyStarted = false;
+        while (($line = stream_get_line($this->socket, self::READ_BYTES, "\r\n")) !== false) {
+            if (empty($line)) {
+                $processingBodyStarted = true;
+            } elseif ($processingBodyStarted) {
+                $block = stream_get_line($this->socket, self::READ_BYTES, "\r\n");
+                yield from $this->responseParser->add($block)->row();
+            }
+        }
     }
 
 }
