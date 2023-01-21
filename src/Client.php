@@ -76,6 +76,8 @@ class Client
         while (($line = stream_get_line($this->socket, self::READ_BYTES, "\r\n")) !== false) {
             if (empty($line)) {
                 $processingBodyStarted = true;
+            } elseif (!$processingBodyStarted && str_contains($line, 'X-ClickHouse-Exception')) {
+                throw new ClickhouseServerException($line);
             } elseif ($processingBodyStarted) {
                 $block = stream_get_line($this->socket, self::READ_BYTES, "\r\n");
                 yield from $this->responseParser->add($block)->row();
