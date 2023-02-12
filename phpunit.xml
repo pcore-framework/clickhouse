@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<phpunit bootstrap="./vendor/autoload.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnError="true"
+         stopOnFailure="true">
+    <testsuites>
+        <testsuite name="clickhousetest">
+            <directory>./tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
